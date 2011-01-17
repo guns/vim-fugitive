@@ -696,7 +696,7 @@ function! s:Commit(args) abort
     elseif &shell !~# 'csh'
       let command = 'GIT_EDITOR=false '
     endif
-    let command .= s:repo().git_command('commit').' '.a:args
+    let command .= s:repo().git_command('commit').' -v '.a:args
     if &shell =~# 'csh'
       silent execute '!setenv GIT_EDITOR false; ('.command.' > '.outfile.') >& '.errorfile
     elseif a:args =~# '\%(^\| \)--interactive\>'
