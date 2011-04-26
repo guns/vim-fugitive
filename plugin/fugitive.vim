@@ -707,7 +707,7 @@ endfunction
 " }}}1
 " Gcommit {{{1
 
-call s:command("-nargs=? -complete=customlist,s:CommitComplete Gcommit :execute s:Commit(<q-args>)")
+call s:command("-nargs=? -complete=customlist,s:CommitComplete Gcommit :execute s:Commit(<q-args>) | wincmd T")
 
 function! s:Commit(args) abort
   let old_type = s:buffer().type()
