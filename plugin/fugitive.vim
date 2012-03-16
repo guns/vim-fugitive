@@ -558,6 +558,7 @@ function! s:Git(bang,cmd) abort
   let cmd = matchstr(a:cmd,'\v\C.{-}%($|\\@<!%(\\\\)*\|)@=')
   call s:ExecuteInTree('!'.git.' '.cmd)
   call fugitive#reload_status()
+  redraw!
   return matchstr(a:cmd,'\v\C\\@<!%(\\\\)*\|\zs.*')
 endfunction
 
@@ -795,7 +796,7 @@ endfunction
 " }}}1
 " Gcommit {{{1
 
-call s:command("-nargs=? -complete=customlist,s:CommitComplete Gcommit :execute s:Commit(<q-args>)")
+call s:command("-nargs=? -complete=customlist,s:CommitComplete Gcommit :execute s:Commit(<q-args>) | wincmd T")
 
 function! s:Commit(args) abort
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -813,7 +814,7 @@ function! s:Commit(args) abort
       else
         let command = 'env GIT_EDITOR=false '
       endif
-      let command .= s:repo().git_command('commit').' '.a:args
+      let command .= s:repo().git_command('commit').' -v '.a:args
       if &shell =~# 'csh'
         silent execute '!('.command.' > '.outfile.') >& '.errorfile
       elseif a:args =~# '\%(^\| \)--interactive\>'
@@ -918,7 +919,7 @@ function! s:Grep(bang,arg) abort
     execute cd.'`=s:repo().tree()`'
     let &grepprg = s:repo().git_command('--no-pager', 'grep', '-n')
     let &grepformat = '%f:%l:%m'
-    exe 'grep! '.escape(matchstr(a:arg,'\v\C.{-}%($|[''" ]\@=\|)@='),'|')
+    exe 'silent! grep! '.escape(matchstr(a:arg,'\v\C.{-}%($|[''" ]\@=\|)@='),'|')
     let list = getqflist()
     for entry in list
       if bufname(entry.bufnr) =~ ':'
@@ -1916,8 +1917,8 @@ function! s:BufReadIndex()
     nunmap   <buffer>          ~
     nnoremap <buffer> <silent> <C-N> :call search('^#\t.*','W')<Bar>.<CR>
     nnoremap <buffer> <silent> <C-P> :call search('^#\t.*','Wbe')<Bar>.<CR>
-    nnoremap <buffer> <silent> - :<C-U>execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
-    xnoremap <buffer> <silent> - :<C-U>execute <SID>StageToggle(line("'<"),line("'>"))<CR>
+    nnoremap <buffer> <silent> , :<C-U>execute <SID>StageToggle(line('.'),line('.')+v:count1-1)<CR>
+    xnoremap <buffer> <silent> , :<C-U>execute <SID>StageToggle(line("'<"),line("'>"))<CR>
     nnoremap <buffer> <silent> a :<C-U>let b:fugitive_display_format += 1<Bar>exe <SID>BufReadIndex()<CR>
     nnoremap <buffer> <silent> i :<C-U>let b:fugitive_display_format -= 1<Bar>exe <SID>BufReadIndex()<CR>
     nnoremap <buffer> <silent> C :<C-U>Gcommit<CR>
