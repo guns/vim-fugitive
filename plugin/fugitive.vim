@@ -610,7 +610,6 @@ function! s:Git(bang,cmd) abort
   let cmd = matchstr(a:cmd,'\v\C.{-}%($|\\@<!%(\\\\)*\|)@=')
   call s:ExecuteInTree('!'.git.' '.cmd)
   call fugitive#reload_status()
-  redraw!
   return matchstr(a:cmd,'\v\C\\@<!%(\\\\)*\|\zs.*')
 endfunction
 
